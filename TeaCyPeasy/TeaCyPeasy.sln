@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeaCyPeasy", "TeaCyPeasy\TeaCyPeasy.csproj", "{CF4A0649-1D3F-4EF1-9D1D-7F3E8EDC290C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeaCyPeasy.UnitTests", "TeaCyPeasy.UnitTests\TeaCyPeasy.UnitTests.csproj", "{52244E84-0E67-4FD5-84C1-54E060E4FBDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{CF4A0649-1D3F-4EF1-9D1D-7F3E8EDC290C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF4A0649-1D3F-4EF1-9D1D-7F3E8EDC290C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF4A0649-1D3F-4EF1-9D1D-7F3E8EDC290C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52244E84-0E67-4FD5-84C1-54E060E4FBDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52244E84-0E67-4FD5-84C1-54E060E4FBDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52244E84-0E67-4FD5-84C1-54E060E4FBDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52244E84-0E67-4FD5-84C1-54E060E4FBDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
