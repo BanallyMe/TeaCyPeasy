@@ -12,13 +12,16 @@ namespace BanallyMe.TeaCyPeasy.ServerReactions
         /// <inheritdoc />
         public Stream? CreateServerReaction(Stream receivedData)
         {
+            if (receivedData is null) throw new ArgumentNullException(nameof(receivedData));
+
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
         public void RegisterServerReactionFactoryForCondition(Func<Stream> reactionFactory, Func<Stream, bool> conditionDelegate)
         {
-            throw new NotImplementedException();
+            if (reactionFactory is null) throw new ArgumentNullException(nameof(reactionFactory));
+            if (conditionDelegate is null) throw new ArgumentNullException(nameof(conditionDelegate));
         }
     }
 }
