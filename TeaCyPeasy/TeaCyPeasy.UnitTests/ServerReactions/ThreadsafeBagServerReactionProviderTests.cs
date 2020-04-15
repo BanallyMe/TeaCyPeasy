@@ -25,7 +25,7 @@ namespace BanallyMe.TeaCyPeasy.UnitTests.ServerReactions
         {
             var provider = new ThreadsafeBagServerReactionProvider();
 
-            Action registration = () => provider.RegisterServerReactionFactoryForCondition(() => new MemoryStream(), null);
+            Action registration = () => provider.RegisterServerReactionFactoryForCondition((Stream inputStream) => new MemoryStream(), null);
 
             registration.Should()
                 .ThrowExactly<ArgumentNullException>()

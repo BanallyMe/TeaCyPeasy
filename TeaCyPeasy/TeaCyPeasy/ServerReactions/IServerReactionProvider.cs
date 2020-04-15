@@ -14,7 +14,7 @@ namespace BanallyMe.TeaCyPeasy.ServerReactions
         /// <param name="receivedData">Data that has been received from the client.</param>
         /// <returns>The stream that can be sent to the client. Null if no stream could be created.</returns>
         /// <exception cref="ArgumentNullException">Thrown if the passed stream is null.</exception>
-        Stream? CreateServerReaction(Stream receivedData);
+        Stream CreateServerReaction(Stream receivedData);
 
         /// <summary>
         /// Registers a factory method for creating a server reaction. Uses a conditional delegate that can determine the cases
@@ -25,6 +25,6 @@ namespace BanallyMe.TeaCyPeasy.ServerReactions
         ///     A delegate to determine if the factory method should be used. Factory method is only used if this delegate returns true.
         /// </param>
         /// <exception cref="ArgumentNullException">Thrown if one of the passed reactionFactory or conditionDelegate is null.</exception>
-        void RegisterServerReactionFactoryForCondition(Func<Stream> reactionFactory, Func<Stream, bool> conditionDelegate);
+        void RegisterServerReactionFactoryForCondition(Func<Stream, Stream> reactionFactory, Func<Stream, bool> conditionDelegate);
     }
 }

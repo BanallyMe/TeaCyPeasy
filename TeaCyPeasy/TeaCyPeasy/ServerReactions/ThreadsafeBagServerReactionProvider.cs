@@ -1,6 +1,8 @@
-﻿using System;
+﻿using BanallyMe.TeaCyPeasy.Exceptions;
+using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Linq;
 
 namespace BanallyMe.TeaCyPeasy.ServerReactions
 {
@@ -10,26 +12,53 @@ namespace BanallyMe.TeaCyPeasy.ServerReactions
     /// </summary>
     internal class ThreadsafeBagServerReactionProvider : IServerReactionProvider
     {
-        private readonly ConcurrentBag<(Func<Stream, bool> conditionDelegate, Func<Stream> reactionFactory)> reactionFactories;
+        private readonly ConcurrentBag<ConditionReactionFactoryPair> reactionFactories;
 
         public ThreadsafeBagServerReactionProvider()
         {
-            reactionFactories = new ConcurrentBag<(Func<Stream, bool> conditionDelegate, Func<Stream> reactionFactory)>();
+            reactionFactories = new ConcurrentBag<ConditionReactionFactoryPair>();
         }
 
         /// <inheritdoc />
-        public Stream? CreateServerReaction(Stream receivedData)
+        public Stream CreateServerReaction(Stream receivedData)
         {
             if (receivedData is null) throw new ArgumentNullException(nameof(receivedData));
+            if (reactionFactories.Count == 0) throw new ServerReactionException("The server could not create a reaction to a client's input: No reaction factories have been registered.");
 
-            throw new NotImplementedException();
+            var reactionFactory = GetReactionFactoryForInput(receivedData);
+
+            return reactionFactory(receivedData);
         }
 
         /// <inheritdoc />
-        public void RegisterServerReactionFactoryForCondition(Func<Stream> reactionFactory, Func<Stream, bool> conditionDelegate)
+        public void RegisterServerReactionFactoryForCondition(Func<Stream, Stream> reactionFactory, Func<Stream, bool> conditionDelegate)
         {
             if (reactionFactory is null) throw new ArgumentNullException(nameof(reactionFactory));
             if (conditionDelegate is null) throw new ArgumentNullException(nameof(conditionDelegate));
+
+            var entryToRegister = new ConditionReactionFactoryPair(conditionDelegate, reactionFactory);
+            reactionFactories.Add(entryToRegister);
+        }
+
+        private Func<Stream, Stream> GetReactionFactoryForInput(Stream inputStream)
+        {
+            var reactionFactory = reactionFactories.FirstOrDefault(rf => rf.ConditionDelegate(inputStream))?.ReactionFactory;
+
+            if (reactionFactory is null) throw new ServerReactionException("The server could not create a reaction to a client's input: None of the registered factories' conditions matched the input stream.");
+
+            return reactionFactory;
+        }
+
+        private class ConditionReactionFactoryPair
+        {
+            public ConditionReactionFactoryPair(Func<Stream, bool> conditionDelegate, Func<Stream, Stream> reactionFactory)
+            {
+                ConditionDelegate = conditionDelegate;
+                ReactionFactory = reactionFactory;
+            }
+
+            public Func<Stream, bool> ConditionDelegate { get; }
+            public Func<Stream, Stream> ReactionFactory { get; }
         }
     }
 }
