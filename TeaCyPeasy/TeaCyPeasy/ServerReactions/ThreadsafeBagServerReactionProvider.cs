@@ -25,9 +25,7 @@ namespace BanallyMe.TeaCyPeasy.ServerReactions
             if (receivedData is null) throw new ArgumentNullException(nameof(receivedData));
             if (reactionFactories.Count == 0) throw new ServerReactionException("The server could not create a reaction to a client's input: No reaction factories have been registered.");
 
-            var reactionFactory = GetReactionFactoryForInput(receivedData);
-
-            return reactionFactory(receivedData);
+            return TryGetReactionForInput(receivedData);
         }
 
         /// <inheritdoc />
@@ -38,6 +36,20 @@ namespace BanallyMe.TeaCyPeasy.ServerReactions
 
             var entryToRegister = new ConditionReactionFactoryPair(conditionDelegate, reactionFactory);
             reactionFactories.Add(entryToRegister);
+        }
+
+        private Stream TryGetReactionForInput(Stream inputStream)
+        {
+            var reactionFactory = GetReactionFactoryForInput(inputStream);
+
+            try
+            {
+                return reactionFactory(inputStream);
+            }
+            catch (Exception exc)
+            {
+                throw new ServerReactionException("Could not create a reaction to a client's input: The reaction factory method threw an exception.", exc);
+            }
         }
 
         private Func<Stream, Stream> GetReactionFactoryForInput(Stream inputStream)

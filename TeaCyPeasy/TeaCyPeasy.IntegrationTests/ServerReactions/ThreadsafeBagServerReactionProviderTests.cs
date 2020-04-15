@@ -41,7 +41,7 @@ namespace BanallyMe.TeaCyPeasy.IntegrationTests.ServerReactions
         public void AllConditionDelegatesAreExecutedToFindCorrectFactory(int numberOfRegisteredReactionFactories)
         {
             var callCounter = 0;
-            Func<Stream, bool> fakeConditionDelegate = (Stream inputStream) => { callCounter++; return false; };
+            bool fakeConditionDelegate(Stream inputStream) { callCounter++; return false; }
             var testedProvider = new ThreadsafeBagServerReactionProvider();
             for (var i = 0; i < numberOfRegisteredReactionFactories; i++)
             {
@@ -58,6 +58,21 @@ namespace BanallyMe.TeaCyPeasy.IntegrationTests.ServerReactions
             { }
 
             callCounter.Should().Be(numberOfRegisteredReactionFactories);
+        }
+
+        [Fact]
+        public void CreatingReactionThrowsExceptionIfFactoryThrowsException()
+        {
+            var factoryException = new Exception("This is a test exception thrown by a server response factory.");
+            var testedProvider = new ThreadsafeBagServerReactionProvider();
+            testedProvider.RegisterServerReactionFactoryForCondition((Stream input) => throw factoryException, (Stream input) => true);
+
+            using var fakeInputStream = new MemoryStream();
+            Action reactionCreating = () => testedProvider.CreateServerReaction(fakeInputStream);
+
+            reactionCreating.Should().ThrowExactly<ServerReactionException>()
+                .WithMessage("Could not create a reaction to a client's input: The reaction factory method threw an exception.")
+                .Which.InnerException.Should().Be(factoryException);
         }
     }
 }
