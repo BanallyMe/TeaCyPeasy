@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 
 namespace BanallyMe.TeaCyPeasy.ServerReactions
@@ -9,6 +10,13 @@ namespace BanallyMe.TeaCyPeasy.ServerReactions
     /// </summary>
     internal class ThreadsafeBagServerReactionProvider : IServerReactionProvider
     {
+        private readonly ConcurrentBag<(Func<Stream, bool> conditionDelegate, Func<Stream> reactionFactory)> reactionFactories;
+
+        public ThreadsafeBagServerReactionProvider()
+        {
+            reactionFactories = new ConcurrentBag<(Func<Stream, bool> conditionDelegate, Func<Stream> reactionFactory)>();
+        }
+
         /// <inheritdoc />
         public Stream? CreateServerReaction(Stream receivedData)
         {
