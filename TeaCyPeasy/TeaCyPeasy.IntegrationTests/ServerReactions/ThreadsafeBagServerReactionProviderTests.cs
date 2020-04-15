@@ -74,5 +74,22 @@ namespace BanallyMe.TeaCyPeasy.IntegrationTests.ServerReactions
                 .WithMessage("Could not create a reaction to a client's input: The reaction factory method threw an exception.")
                 .Which.InnerException.Should().Be(factoryException);
         }
+
+        [Fact]
+        public void CreatingReactionReturnsStreamFromCorrectFactory()
+        {
+            using var expectedStream = new MemoryStream();
+            var testedProvider = new ThreadsafeBagServerReactionProvider();
+            testedProvider.RegisterServerReactionFactoryForCondition((Stream inputStream) => new MemoryStream(), (Stream inputStream) => false);
+            testedProvider.RegisterServerReactionFactoryForCondition((Stream inputStream) => new MemoryStream(), (Stream inputStream) => false);
+            testedProvider.RegisterServerReactionFactoryForCondition((Stream inputStream) => expectedStream, (Stream inputStream) => true);
+            testedProvider.RegisterServerReactionFactoryForCondition((Stream inputStream) => new MemoryStream(), (Stream inputStream) => false);
+            testedProvider.RegisterServerReactionFactoryForCondition((Stream inputStream) => new MemoryStream(), (Stream inputStream) => false);
+
+            using var fakeInputSream = new MemoryStream();
+            var receivedReaction = testedProvider.CreateServerReaction(fakeInputSream);
+
+            receivedReaction.Should().Be(expectedStream);
+        }
     }
 }
